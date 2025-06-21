@@ -2,7 +2,7 @@
 "use client";
 
 import TodoHeader from "@/component/Header";
-import { use, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useState } from "react";
 
 type Todo = {
   id: number;
@@ -21,20 +21,21 @@ export default function TodoPage({ params }: PageProps) {
 
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTitle, setNewTitle] = useState("");
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  const fetchTodos = useCallback(async () => {
+    const res = await fetch(`${apiUrl}/todos`);
+    const data = await res.json();
+    setTodos(data);
+  }, [apiUrl]);
 
   // Todo取得
   useEffect(() => {
     fetchTodos();
-  }, []);
-
-  const fetchTodos = async () => {
-    const res = await fetch("http://localhost:8090/todos");
-    const data = await res.json();
-    setTodos(data);
-  };
+  }, [fetchTodos]);
 
   const handleAddTodo = async () => {
-    await fetch("http://localhost:8090/todos", {
+    await fetch(`${apiUrl}/todos`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -52,7 +53,7 @@ export default function TodoPage({ params }: PageProps) {
   };
 
   const handleToggleCompleted = async (todo: Todo) => {
-    await fetch(`http://localhost:8090/todos/${todo.id}`, {
+    await fetch(`${apiUrl}/todos/${todo.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -67,7 +68,7 @@ export default function TodoPage({ params }: PageProps) {
   };
 
   const handleDeleteTodo = async (todo: Todo) => {
-    await fetch(`http://localhost:8090/todos/${todo.id}`, {
+    await fetch(`${apiUrl}/todos/${todo.id}`, {
       method: "DELETE",
     });
 
