@@ -1,7 +1,7 @@
 //next/src/app/todos/[date]/page.tsx
 "use client";
 
-import TodoHeader from "@/component/Header";
+import TodoHeader from "@/components/Header";
 import { use, useCallback, useEffect, useState } from "react";
 
 type Todo = {
