@@ -11,7 +11,7 @@ if (!googleClientId || !googleClientSecret) {
   );
 }
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Google({
       clientId: googleClientId,
@@ -19,14 +19,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async redirect({ baseUrl }) {
-      // サインイン成功後、今日の日付のページへリダイレクト
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = String(today.getMonth() + 1).padStart(2, "0");
-      const day = String(today.getDate()).padStart(2, "0");
-      const todayStr = `${year}-${month}-${day}`;
-      return `${baseUrl}/todos/${todayStr}`;
+    async redirect({ url, baseUrl }) {
+      // ✅ サインアウト後は /auth/signout に遷移
+      if (
+        url.includes("/auth/signout") ||
+        url === baseUrl ||
+        url === `${baseUrl}/`
+      ) {
+        return `${baseUrl}/auth/signin`;
+      }
+
+      // ✅ サインイン成功後（callback経由）→ 今日のページに遷移
+      if (url.includes("/auth/signin")) {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, "0");
+        const day = String(today.getDate()).padStart(2, "0");
+        const todayStr = `${year}-${month}-${day}`;
+        return `${baseUrl}/todos/${todayStr}`;
+      }
+
+      // ✅ その他はそのまま
+      return url.startsWith(baseUrl) ? url : baseUrl;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
