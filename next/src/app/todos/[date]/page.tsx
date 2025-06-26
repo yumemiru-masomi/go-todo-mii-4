@@ -85,11 +85,11 @@ export default function TodoPage({ params }: PageProps) {
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
           placeholder="新しいTodoを入力..."
-          className="flex-1 p-2 rounded bg-gray-700 text-white placeholder-gray-400"
+          className="flex-1 p-2 rounded-lg bg-white/10 backdrop-blur-md text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/30 transition"
         />
         <button
           onClick={handleAddTodo}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+          className="px-4 py-2 rounded-full text-sm font-semibold text-white bg-white/10 hover:bg-white/20 transition"
         >
           追加
         </button>
@@ -100,7 +100,7 @@ export default function TodoPage({ params }: PageProps) {
         {todos.map((todo) => (
           <li
             key={todo.id}
-            className="flex justify-between items-center p-4 bg-gray-800 border border-gray-700 rounded-xl shadow-sm hover:shadow-md transition"
+            className="flex justify-between items-center p-4 rounded-xl shadow-lg bg-white/20 backdrop-blur-md hover:bg-white/30 transition"
           >
             <div className="flex items-center">
               {/* チェックボックス */}
@@ -108,7 +108,7 @@ export default function TodoPage({ params }: PageProps) {
                 type="checkbox"
                 checked={todo.completed}
                 onChange={() => handleToggleCompleted(todo)}
-                className="w-5 h-5 mr-4 accent-green-600"
+                className="w-5 h-5 mr-4 rounded border border-white/30 bg-white/10 checked:bg-white/40 checked:border-white/50 appearance-none checked:after:content-['✔'] checked:after:text-white checked:after:text-sm checked:after:block checked:after:text-center transition"
               />
               <span className="text-lg font-medium text-white">
                 {todo.title}

@@ -5,7 +5,7 @@ import { SignOutButton } from "@/components/auth/SignOutButton";
 
 export default function SignOut() {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex flex-col items-center justify-center">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center">
       {/* 閉じるボタン（右上） */}
       <button
         aria-label="閉じる"
