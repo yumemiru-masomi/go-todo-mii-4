@@ -7,5 +7,5 @@ export async function handleSignIn() {
 }
 
 export async function handleSignOut() {
-  await signOut({ redirectTo: "/home" });
+  await signOut();
 }
