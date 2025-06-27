@@ -104,14 +104,12 @@ func main() {
 	r.Use(cors.Default())
 
 	initDB()
+	
 	// 新規追加
 	r.POST("/todos", createTodo)
-
 	r.PUT("/todos/:id", updateTodo)
-
 	// 一覧取得
 	r.GET("/todos", getTodos)
-
 	// 削除
 	r.DELETE("/todos/:id", deleteTodo)
 
