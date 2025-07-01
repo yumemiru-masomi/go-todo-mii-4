@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -17,6 +18,7 @@ type Todo struct {
 	ID        uint   `gorm:"primaryKey" json:"id"`//ここの`gorm:"primaryKey" json:"id"`が
 	Title     string `json:"title"`
 	Completed bool   `json:"completed"`
+	UserEmail  string `json:"user_email"`
 }
 
 var db *gorm.DB
@@ -37,11 +39,15 @@ func initDB() {
 }
 
 func createTodo(c *gin.Context) {
+	userEmail := c.GetHeader("X-User-Email")
+
 	var todo Todo
 	if err := c.ShouldBindJSON(&todo); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	todo.UserEmail = userEmail
 	db.Create(&todo)
 	c.JSON(http.StatusCreated, todo)
 }
@@ -53,7 +59,6 @@ func updateTodo(c *gin.Context){
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
-	
 	var todo Todo
 	if err := db.First(&todo, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Todo not found"})
@@ -76,8 +81,10 @@ func updateTodo(c *gin.Context){
 }
 
 func getTodos(c *gin.Context) {
+	userEmail := c.GetHeader("X-User-Email")
+
 	var todos []Todo
-	db.Find(&todos)
+	db.Where("user_email = ?", userEmail).Find(&todos) 
 	c.JSON(http.StatusOK, todos)
 }
 
@@ -101,7 +108,13 @@ func deleteTodo(c *gin.Context){
 
 func main() {
 	r := gin.Default()
-	r.Use(cors.Default())
+	r.Use(cors.New(cors.Config{
+	  AllowOrigins:     []string{"http://localhost:3003"},
+	  AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+	  AllowHeaders:     []string{"Origin", "Content-Type", "X-User-Email"}, // これが必要！
+	  AllowCredentials: true,
+	  MaxAge:           12 * time.Hour,
+    }))
 
 	initDB()
 	

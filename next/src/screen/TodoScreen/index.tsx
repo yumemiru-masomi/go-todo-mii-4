@@ -23,10 +23,15 @@ export default function TodoScreen({ sessionUser }: Props) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const fetchTodos = useCallback(async () => {
-    const res = await fetch(`${apiUrl}/todos`);
+    const res = await fetch(`${apiUrl}/todos`, {
+      headers: {
+        "Content-Type": "application/json",
+        "X-User-Email": sessionUser.email || "",
+      },
+    });
     const data = await res.json();
     setTodos(data);
-  }, [apiUrl]);
+  }, [apiUrl, sessionUser.email]);
 
   // Todo取得
   useEffect(() => {
@@ -38,6 +43,7 @@ export default function TodoScreen({ sessionUser }: Props) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "X-User-Email": sessionUser.email || "",
       },
       body: JSON.stringify({
         title: newTitle,
@@ -56,6 +62,7 @@ export default function TodoScreen({ sessionUser }: Props) {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        "X-User-Email": sessionUser.email || "",
       },
       body: JSON.stringify({
         title: todo.title,
@@ -69,6 +76,10 @@ export default function TodoScreen({ sessionUser }: Props) {
   const handleDeleteTodo = async (todo: Todo) => {
     await fetch(`${apiUrl}/todos/${todo.id}`, {
       method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "X-User-Email": sessionUser.email || "",
+      },
     });
 
     fetchTodos();
